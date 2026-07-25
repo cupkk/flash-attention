@@ -23,6 +23,7 @@ class NamedBarrierFwdSm100(enum.IntEnum):
     SoftmaxStatsW5 = enum.auto()
     SoftmaxStatsW6 = enum.auto()
     SoftmaxStatsW7 = enum.auto()
+    SoftmaxSmemP = enum.auto()  # barrier across softmax warpgroup for SMEM-P visibility
 
 
 class NamedBarrierBwd(enum.IntEnum):
