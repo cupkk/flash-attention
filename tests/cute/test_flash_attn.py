@@ -136,6 +136,8 @@ def test_flash_attn_forced_split_config_reuses_specializations():
 
     main_specs = set(_flash_attn_fwd.compile_cache.cache)
     combine_specs = set(_flash_attn_fwd_combine.compile_cache.cache)
+    major, minor = torch.cuda.get_device_capability()
+    assert all(spec.arch == major * 10 + minor for spec in combine_specs)
     split_main_specs = {spec for spec in main_specs if spec.config.is_split_kv}
     assert split_main_specs
     assert all(spec.has_lse for spec in split_main_specs)

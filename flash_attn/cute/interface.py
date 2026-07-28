@@ -1101,6 +1101,7 @@ def _flash_attn_fwd(
             lse.transpose(-1, -2) if lse is not None else None,
             cu_seqlens_q,
             seqused_q,
+            _arch=arch,
         )
     return out, lse, p, row_max
 
@@ -2970,6 +2971,8 @@ def _flash_attn_fwd_combine(
     num_splits_dynamic_ptr: Optional[torch.Tensor] = None,
     varlen_batch_idx: Optional[torch.Tensor] = None,
     semaphore_to_reset: Optional[torch.Tensor] = None,
+    *,
+    _arch: Optional[int] = None,
 ) -> None:
     """Forward combine kernel for split attention computation.
 
@@ -3016,6 +3019,7 @@ def _flash_attn_fwd_combine(
     log_max_splits = combine_log_max_splits(num_splits, tile_m)
 
     combine_spec = FwdCombineKernelSpec(
+        arch=_get_device_arch() if _arch is None else _arch,
         dtype=torch2cute_dtype_map[out.dtype],
         dtype_partial=torch2cute_dtype_map[out_partial.dtype],
         head_dim=head_dim,

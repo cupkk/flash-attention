@@ -4,6 +4,7 @@ from dataclasses import replace
 import pytest
 
 from flash_attn.cute.config import (
+    FwdCombineKernelSpec,
     FwdHeuristicInputs,
     FwdMainKernelConfigSpec,
     combine_log_max_splits,
@@ -653,6 +654,24 @@ def test_explicit_2cta_config_is_valid_when_environment_default_disables_it():
 
     assert not config.use_2cta_instrs
     validate_fwd_config(replace(config, use_2cta_instrs=True), inputs)
+
+
+def test_combine_specialization_is_architecture_specific():
+    spec = FwdCombineKernelSpec(
+        arch=100,
+        dtype="bf16",
+        dtype_partial="fp32",
+        head_dim=128,
+        tile_m=8,
+        k_block_size=128,
+        log_max_splits=5,
+        has_cu_seqlens=False,
+        has_seqused=False,
+        has_lse=False,
+        has_varlen_batch_idx=False,
+    )
+
+    assert spec != replace(spec, arch=103)
 
 
 def test_specialization_projects_exact_split_counts_per_kernel():
